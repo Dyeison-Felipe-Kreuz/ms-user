@@ -3,8 +3,9 @@ import { NestFactory } from '@nestjs/core';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
+import { ConfigService } from '@nestjs/config';
 
-export const GlobalConfig = async (app: INestApplication) => {
+export const GlobalConfig = async (app: INestApplication, configService: ConfigService) => {
   const configSwagger = new DocumentBuilder()
     .setTitle('api-user')
     .setDescription('crud completo de usuários')
@@ -24,9 +25,9 @@ export const GlobalConfig = async (app: INestApplication) => {
     {
       transport: Transport.REDIS,
       options: {
-        host: 'maglev.proxy.rlwy.net',
-        port: 29529,
-        password: 'iLtUkvcaNVREjOHDgvtfWvckFXZbiewT',
+        host: configService.get<string>('REDIS_HOST'),
+        port: configService.get<number>('REDIS_PORT'),
+        password: configService.get<string>('REDIS_PASSWORD'),
         retryAttempts: 5, // Tentativas de reconexão
         retryDelay: 3000, // Intervalo entre tentativas
       },

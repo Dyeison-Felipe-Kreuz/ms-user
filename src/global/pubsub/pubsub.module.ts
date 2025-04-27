@@ -1,5 +1,5 @@
 import { Global, Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { PubSubService } from './punsub.service';
 
@@ -10,15 +10,15 @@ import { PubSubService } from './punsub.service';
     ClientsModule.registerAsync([
       {
         name: 'REDIS_CLIENT',
-        imports: [],
-        inject: [],
-        useFactory: () => {
+        imports: [ConfigModule],
+        inject: [ConfigService],
+        useFactory: (configService: ConfigService) => {
           return {
             transport: Transport.REDIS,
             options: {
-              host: 'maglev.proxy.rlwy.net',
-              port: 29529,
-              password: 'iLtUkvcaNVREjOHDgvtfWvckFXZbiewT',
+              host: configService.get<string>('REDIS_HOST'),
+              port: configService.get<number>('REDIS_PORT'),
+              password: configService.get<string>('REDIS_PASSWORD'),
               retryAttempts: 5, // Tentativas de reconexão
               retryDelay: 3000, // Intervalo entre tentativas
             },
@@ -30,4 +30,4 @@ import { PubSubService } from './punsub.service';
   providers: [PubSubService],
   exports: [PubSubService],
 })
-export class PubSubModule {}
+export class PubSubModule { }
