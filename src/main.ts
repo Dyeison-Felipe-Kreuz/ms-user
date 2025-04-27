@@ -10,7 +10,7 @@ async function bootstrap() {
 
   void GlobalConfig(app, configService)
 
-  await app.listen(process.env.PORT ?? 3000);
+  await app.listen(configService.get<string>('PORT') ?? 3000);
   console.log(`Server isRunning in port 3000`);
 }
 void bootstrap();
